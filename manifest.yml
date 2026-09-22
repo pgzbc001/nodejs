@@ -1,0 +1,8 @@
+---
+applications:
+  - name: nodejs
+    memory: 256M
+    instances: 1
+    buildpacks:
+      - nodejs_buildpack
+    random-route: true
