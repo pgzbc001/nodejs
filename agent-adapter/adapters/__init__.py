@@ -1,0 +1,1 @@
+# agent-adapter/adapters/__init__.py

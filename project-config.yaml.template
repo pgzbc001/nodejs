@@ -1,0 +1,66 @@
+# ============================================================
+# Project Configuration — Dev Harness Framework
+# ------------------------------------------------------------
+# 由 project-setup「增量落盘」生成（确认即落盘，非一次性产出）：
+#   · Phase 1 确认后写入骨架：全局字段 + 各Workbench key/name 桩条目（其余字段标 # TODO）
+#   · Phase 2 每Workbench确认后补全该Workbench条目（替换其 # TODO）
+# Phase 3 及后续所有 Skill 以本文件为唯一结构化事实源，不依赖对话记忆。
+# 提交此文件到 git。
+# ============================================================
+
+project:
+  name: "{{PROJECT_NAME}}"
+  ticket_prefix: "{{TICKET_PREFIX}}"       # 票据前缀，如 PROJ / LION / ISSUE
+  ticket_format: "{{TICKET_FORMAT}}"       # 完整格式，如 "{prefix}-{number}" 或 "#{number}"
+
+# 目录结构配置
+dirs:
+  requirements: "{{REQUIREMENTS_DIR}}"             # 需求文档根目录，固定 01-requirements
+  module_exploration: "{{MODULE_EXPLORATION_DIR}}" # 模块探索产物目录，固定 00-analysis
+
+# ============================================================
+# 业务Workbench（N Workbench模型）—— 纯索引/注册表
+# ------------------------------------------------------------
+# Workbench 是一个**列表**，数量不限：可以是单Workbench（如 backend only），
+# 也可以是任意组合（backend + frontend + data + mobile + ml + infra…）。
+# project-setup 先在 Phase 1 落盘各Workbench key/name 桩条目，再在 Phase 2 逐Workbench确认后
+# 补全各自条目——每个Workbench独立采集、独立确认、独立落盘。
+#
+# 【铁律】本文件只存**配置与索引**，不存任何"被 Skill 当知识引用"的内容。
+#   · Workbench条目只回答"有哪些Workbench、叫什么、文档写哪、代码在哪"——纯定位/枚举。
+#   · 技术栈、分层、构建/测试/lint 命令、命名约定、Workbench红线等**Workbench知识**
+#     在 Phase 2 采集时**直接写入 skills/{skill}/references/{Workbench}.md**（及
+#     project-memory 的约束/规范草稿），**不进本文件**。
+#   · 判定线：框架用来"定位/枚举" → 进 config；Skill 拿去"执行/遵循" → 进 references。
+#
+# Workbench的 key 是该Workbench的唯一标识，三处共用同一个值：
+#   ① 本列表条目的 key
+#   ② local_profile.yaml 的 role（Workbench工程师的角色 = Workbench key）
+#   ③ local_profile.yaml 的 code_roots 键名
+# ============================================================
+Workbench:
+{{Workbench_BLOCK}}
+  # ↑ project-setup 用每个Workbench一条的列表替换 {{Workbench_BLOCK}}。条目格式（仅索引字段）：
+  #
+  # - key: backend                       # Workbench唯一键（= role = code_roots 键名）
+  #   name: "backend"                     # 显示名，可与 key 不同（如 key=data, name=bigdata）
+  #   doc_root: "02-backend/01_function"  # 本Workbench文档产物根目录（定位）
+  #   repositories:                       # 本Workbench代码仓库清单（索引：定位代码与 AGENTS.md）
+  #     - name: my-service-core
+  #       description: 核心业务服务
+  #     - name: my-service-api
+  #       description: API 网关服务
+  #
+  # - key: frontend
+  #   name: "frontend"
+  #   doc_root: "03-frontend/01_function"
+  #   repositories:
+  #     - name: my-web-app
+  #       description: 主 Web 应用
+  #
+  # 注：技术栈/分层/命令等**不在此**——见各 skill 的 references/{Workbench}.md。
+
+# 团队角色（影响 local_profile.yaml.example 和 Skill 的执行权限）
+# 通常 = 各Workbench key + 协作角色（tech-lead / ba / qa）
+roles: {{ROLES_LIST}}
+# 示例：[backend, frontend, data, tech-lead, ba, qa]

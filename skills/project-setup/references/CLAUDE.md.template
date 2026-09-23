@@ -1,0 +1,86 @@
+# {{PROJECT_NAME}} — 项目全局上下文
+
+---
+
+## 项目概览
+
+**项目**：{{PROJECT_NAME}}
+**架构模式**：（项目实际架构，由实例化时填写）
+
+---
+
+## 仓库结构
+
+```
+{{PROJECT_SLUG}}-doc-workspace/
+├── CLAUDE.md / AGENTS.md                       # 内容一致，两份均写出
+├── project-config.yaml
+├── project-memory/
+│   ├── MEMORY.md
+│   ├── project_glossary.md
+│   ├── architectural_constraints.md
+│   └── adr_index.md
+├── skills/
+├── doc-templates/
+├── rules/{Workbench}/{coding,api,database}.md  # 团队工程规范，按 Workbench
+├── global-info/                                # 项目级静态事实，需主动 @ 引用
+├── {{REQUIREMENTS_DIR}}/                       # 需求文档，按 {{TICKET_PREFIX}}-xxxx 组织
+{{Workbench_DIRS_COMMENT}}
+├── local_profile.yaml
+└── local_profile.yaml.example
+```
+
+> **重要**：本仓库不包含任何代码。代码仓库由每位工程师在本地独立管理，路径通过 `local_profile.yaml` 声明。
+
+---
+
+## 技术栈
+
+（权威记录见 `project-config.yaml`）
+
+{{TECH_STACK_SUMMARY}}
+
+---
+
+## 角色与访问控制
+
+### 工程师本地配置
+
+`local_profile.yaml`（每位工程师的本地角色配置，声明 role 与代码路径）：
+
+```yaml
+role: {{EXAMPLE_ROLE}}   # {{ROLES_COMMENT}}
+name: 姓名
+
+code_roots:
+{{EXAMPLE_CODE_ROOTS}}
+```
+
+**Skill 行为规则**：
+- `local_profile.yaml` **不存在** → 所有 Skill **BLOCK**，要求先创建并声明 role
+- `role: tech-lead` → 允许全域访问（必须显式声明）
+- 其他 role → 只能访问本人域的代码目录和文档目录
+
+### 代码仓库导航规则
+
+Skill 访问代码时，从 `local_profile.yaml` 读取 `code_roots`，禁止硬编码路径。
+
+获得路径后，**进入任何代码阅读/探索/分析步骤之前，必须先读取该路径下的 agent 文档作为可信上下文**，按优先级：
+
+1. **优先级 1 — `AGENTS.md`**：该仓库根目录、或离目标模块最近的 `AGENTS.md`。描述模块划分、关键入口文件、命名约定和本地约束。
+2. **优先级 2 — `CLAUDE.md`**：同路径下的 `CLAUDE.md`，仅在无 `AGENTS.md` 时回退读取。
+3. **两者皆无 → BLOCK**：禁止后续一切代码探索步骤，提示使用者先在该仓库补充 `AGENTS.md`（或至少 `CLAUDE.md`）后再重跑 Skill。**不得在缺失 agent 文档的情况下凭空探索代码。**
+
+{{AGENTS_MD_TABLE}}
+
+> 此规则适用于所有需要读取代码的 Skill（impact-analyzer / feature-developer / code-reviewer / code-walkthrough / bug-fixer / module-explorer / dev-onboarding / architecture-advisor 等）。各 Skill 的「前置条件检查」会复述此 BLOCK 门。
+
+---
+
+## Memory 系统说明
+
+`project-memory/` 是跨会话的共享知识库。
+
+- **始终加载**：`MEMORY.md`（索引）、`project_glossary.md`（术语）、`architectural_constraints.md`（约束）
+- **按需加载**：其他文件，在需要时由 Skill 明确加载
+- **草稿机制**：所有 AI 写入 Memory 的内容均为草稿状态，需人工确认后生效

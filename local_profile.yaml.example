@@ -1,0 +1,17 @@
+# 本人角色配置，不提交 git，仅本地生效
+# 复制此文件为 local_profile.yaml 并填写
+
+role: {{EXAMPLE_ROLE}}   # 可选值：{{ROLES_LIST}}
+name: 姓名
+
+code_roots:
+  # 填写你负责的域的代码仓库根目录，无权限的域注释掉
+  {{EXAMPLE_CODE_ROOTS}}
+
+# 示例：
+# role: backend
+# name: 张三
+# code_roots:
+#   backend: /Users/zhangsan/projects/my-backend-service
+#   # frontend: # 本人无权限，不填
+#   # data: # 本人无权限，不填
